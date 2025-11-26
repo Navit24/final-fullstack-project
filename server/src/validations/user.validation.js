@@ -21,13 +21,12 @@ const registerSchema = Joi.object({
     .required(),
 
   password: Joi.string()
-    .min(8)
-    .ruleset.regex(/^(?=.*[A-Za-z])[A-Za-z0-9]{8,}$/)
-    .rule({
-      message:
-        "password must be 8 characters long, include at least one uppercase letter, one lowercase letter, one digit, and one special character",
-    })
-    .required(),
+    .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/)
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Password must be at least 7 characters, include English letters and at least one digit",
+    }),
 
   avatar: Joi.object().keys({
     url: Joi.string()

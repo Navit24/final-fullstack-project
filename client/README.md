@@ -1,69 +1,60 @@
-# React + TypeScript + Vite
+# Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+This package contains the React front-end for the social application. It is powered by Vite, written in TypeScript, and styled primarily with Material UI (MUI). Application state is managed through Redux Toolkit slices stored under `src/store/`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js 18 or newer
+- npm 9 or newer
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Installation
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. `cd client`
+2. `npm install`
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Available Scripts
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- `npm run dev` – starts the Vite development server with hot module reloading.
+- `npm run build` – type-checks the project and creates a production-ready bundle in `dist/`.
+- `npm run preview` – serves the built bundle locally for smoke-testing.
+- `npm run lint` – runs ESLint against the project sources.
+
+## API Configuration
+
+The app expects the back-end API to be reachable at `http://localhost:5000/api`. To point the client at another environment, update `API_BASE_URL` inside `src/config/api.ts`. For production builds you can automate this step by loading the value from an environment-aware configuration layer (e.g., using `import.meta.env` and Vite's `VITE_*` variables).
+
+## Project Structure
+
+```
+client/
+├─ src/
+│  ├─ components/    # Shared UI components (forms, navigation, post cards, etc.)
+│  ├─ config/        # API base URL and endpoint declarations
+│  ├─ pages/         # Route-level pages (feed, profile, auth, etc.)
+│  ├─ services/      # Axios API clients and domain-specific services
+│  ├─ store/         # Redux Toolkit slices and store configuration
+│  ├─ theme/         # Material UI theme configuration
+│  └─ types/         # Shared TypeScript definitions
+├─ public/           # Static assets served by Vite
+└─ package.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Development Workflow
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Ensure the server is running locally (or update `API_BASE_URL` to a remote instance).
+2. Run `npm run dev` to start the Vite dev server.
+3. Access the app at the URL reported by Vite (default `http://localhost:5173`).
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Building for Production
+
+- `npm run build` generates an optimised bundle in `dist/`.
+- Serve the `dist/` directory with any static file server (e.g., `npm install -g serve && serve dist`).
+- Remember to point `API_BASE_URL` to the production API before deploying.
+
+## Recommendations
+
+- Add automated tests (unit/integration) to improve confidence in UI regressions.
+- Integrate environment-specific configuration (e.g., `.env.development`) for the API base URL.
+- Consider enabling code-splitting per route to keep bundle sizes small as the app grows.

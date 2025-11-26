@@ -41,7 +41,14 @@ const registerSchema = Joi.object<RegisterFormValues>({
   phone: Joi.string().required(),
   birthDate: Joi.date().iso().required(),
   email: Joi.string().email({ tlds: false }).required(),
-  password: Joi.string().min(8).required(),
+  password: Joi.string()
+    .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/)
+    .required()
+    .messages({
+      "string.empty": "Password is required",
+      "string.pattern.base":
+        "Password must be at least 7 characters, include English letters and at least one digit",
+    }),
   confirmPassword: Joi.string().valid(Joi.ref("password")).required(),
   country: Joi.string().allow(""),
   city: Joi.string().allow(""),
@@ -170,7 +177,9 @@ const RegisterPage = () => {
                     position: "absolute",
                     right: -15,
                     bottom: -15,
-                    bgcolor: "primary.main",
+                    bgcolor: "rgb(187, 180, 180)",
+                    color: "#000",
+                    "&:hover": { bgcolor: "rgb(180, 172, 172)" },
                     boxShadow: 1,
                   }}
                   size="small"

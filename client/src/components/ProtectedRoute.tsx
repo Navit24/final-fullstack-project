@@ -14,7 +14,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate checking authentication status
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 500);
@@ -38,7 +37,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!user) {
-    // Redirect to login page with the return url
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

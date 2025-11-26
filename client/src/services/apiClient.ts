@@ -1,7 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { API_BASE_URL } from "../config/api";
 
-// create axios instance with base URL and JSON headers
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -10,7 +9,6 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
-// request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("token");

@@ -7,7 +7,7 @@ const Footer = () => (
       mt: "auto",
       py: 3,
       background:
-       "linear-gradient(90deg, rgba(27,190,58,0.1) 0%, rgba(27,190,58,0.1) 100%)",
+        "linear-gradient(90deg, rgba(27,190,58,0.1) 0%, rgba(27,190,58,0.1) 100%)",
       borderTop: "1px solid  rgba(0,0,0,0.08)",
     }}
   >

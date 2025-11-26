@@ -29,10 +29,14 @@ const loginSchema = Joi.object<LoginCredentials>({
     "string.empty": "שדה אימייל חובה",
     "string.email": "אימייל לא תקין",
   }),
-  password: Joi.string().min(6).required().messages({
-    "string.empty": "שדה סיסמה חובה",
-    "string.min": "סיסמה חייבת להכיל לפחות 6 תווים",
-  }),
+  password: Joi.string()
+    .pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/)
+    .required()
+    .messages({
+      "string.empty": "Password is required",
+      "string.pattern.base":
+        "Password must be at least 7 characters, include English letters and at least one digit",
+    }),
 });
 
 const LoginPage = () => {
@@ -41,13 +45,12 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // קבלת הנתיב המקורי שממנו הגיע המשתמש
+
   const from = location.state?.from?.pathname || "/feed";
 
-  // state לניהול מצב טעינה
+
   const [isLoading, setIsLoading] = useState(false);
 
-  // הגדרת הטופס עם ולידציה
   const {
     register,
     handleSubmit,

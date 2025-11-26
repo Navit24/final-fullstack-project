@@ -10,7 +10,6 @@ const PublicRoute = ({ children }: PublicRouteProps) => {
   const user = useSelector((state: RootState) => state.user.user);
 
   if (user) {
-    // Redirect to feed if user is already logged in
     return <Navigate to="/feed" replace />;
   }
 

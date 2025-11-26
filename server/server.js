@@ -1,7 +1,7 @@
 // server.js
 
 const express = require("express");
-const cors = require("cors");
+const cors = require("./src/middlewares/cors");
 const chalk = require("chalk");
 require("dotenv").config();
 const connectDB = require("./src/config/db-service");
@@ -13,7 +13,7 @@ const mainRouter = require("./src/routes/router");
 const morganLogger = require("./src/middlewares/morgan-logger");
 
 // Middleware
-app.use(cors());
+app.use(cors);
 app.use(morganLogger);
 // app.use(express.json());
 app.use(express.json({ limit: "15mb" }));
