@@ -22,6 +22,9 @@ const Navbar = ({ searchTerm, setSearchTerm }: NavbarProps) => {
   const user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch<AppDispatch>();
   const handleLogout = () => {
+    const confirmed = window.confirm("Are you sure you want to log out?");
+    if (!confirmed) return;
+
     dispatch(logout());
     navigate("/login");
   };
@@ -33,6 +36,10 @@ const Navbar = ({ searchTerm, setSearchTerm }: NavbarProps) => {
           to="/feed"
           sx={{
             textDecoration: "none",
+            "&:hover": { textDecoration: "none" },
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
           }}
         >
           <img
@@ -40,6 +47,9 @@ const Navbar = ({ searchTerm, setSearchTerm }: NavbarProps) => {
             alt="Feedit Logo"
             style={{ height: "40px", verticalAlign: "middle", borderRadius: 8 }}
           />
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Feedit
+          </Typography>
         </Typography>{" "}
         <Typography>
           <TextField

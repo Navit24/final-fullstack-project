@@ -81,6 +81,15 @@ const CommentSection = ({
                   {item.user?.name?.first ?? "Unknown"}{" "}
                   {item.user?.name?.last ?? ""}
                 </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  display="block"
+                >
+                  {item.createAt
+                    ? new Date(item.createAt).toLocaleString()
+                    : ""}
+                </Typography>
 
                 <Typography>{item.text}</Typography>
               </Paper>

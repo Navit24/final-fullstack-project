@@ -1,7 +1,7 @@
 // ייבוא ספריות חיצוניות
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
+import { Box, CssBaseline } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 
 // ייבוא קומפוננטות דפים
@@ -18,6 +18,8 @@ import PublicRoute from "./components/PublicRoute";
 // ייבוא תצורה
 import { theme } from "./theme/theme";
 import { useState } from "react";
+import Footer from "./components/Footer";
+import AboutPage from "./pages/about/AbotPage";
 
 /**
  * הקומפוננטה הראשית של האפליקציה
@@ -41,75 +43,84 @@ function App() {
       >
         {/* ספק הניתוב */}
         <BrowserRouter>
-          {/* תפריט ניווט עליון */}
-          <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-
-          {/* הגדרת הנתיבים */}
-          <Routes>
-            {/* דף הבית - מוביל לדף התחברות */}
-            <Route
-              path="/"
-              element={
-                <PublicRoute>
-                  <LoginPage />
-                </PublicRoute>
-              }
-            />
-
-            {/* דף הפיד - דורש התחברות */}
-            <Route
-              path="/feed"
-              element={
-                <ProtectedRoute>
-                  <main style={{ paddingTop: 80 }}>
-                    <FeedPage
-                      searchTerm={searchTerm}
-                    />
-                  </main>{" "}
-                </ProtectedRoute>
-              }
-            />
-
-            {/* דף התחברות - רק למשתמשים לא מחוברים */}
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <LoginPage />
-                </PublicRoute>
-              }
-            />
-
-            {/* דף הרשמה - רק למשתמשים לא מחוברים */}
-            <Route
-              path="/register"
-              element={
-                <PublicRoute>
-                  <RegisterPage />
-                </PublicRoute>
-              }
-            />
-
-            {/* דף פרופיל - דורש התחברות */}
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* נתיב ברירת מחדל - מוביל לדף התחברות */}
-            <Route
-              path="*"
-              element={
-                <PublicRoute>
-                  <LoginPage />
-                </PublicRoute>
-              }
-            />
-          </Routes>
+          <Box
+            sx={{
+              minHeight: "100vh",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {/* תפריט ניווט עליון */}
+            <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            {/* הגדרת הנתיבים */}
+            <Routes>
+              {/* דף הבית - מוביל לדף התחברות */}
+              <Route
+                path="/"
+                element={
+                  <PublicRoute>
+                    <LoginPage />
+                  </PublicRoute>
+                }
+              />
+              {/* דף הפיד - דורש התחברות */}
+              <Route
+                path="/feed"
+                element={
+                  <ProtectedRoute>
+                    <main style={{ paddingTop: 80 }}>
+                      <FeedPage searchTerm={searchTerm} />
+                    </main>{" "}
+                  </ProtectedRoute>
+                }
+              />
+              {/* דף התחברות - רק למשתמשים לא מחוברים */}
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <LoginPage />
+                  </PublicRoute>
+                }
+              />
+              {/* דף הרשמה - רק למשתמשים לא מחוברים */}
+              <Route
+                path="/register"
+                element={
+                  <PublicRoute>
+                    <RegisterPage />
+                  </PublicRoute>
+                }
+              />
+              {/* דף פרופיל - דורש התחברות */}
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              {/* נתיב ברירת מחדל - מוביל לדף התחברות */}
+              <Route
+                path="*"
+                element={
+                  <PublicRoute>
+                    <LoginPage />
+                  </PublicRoute>
+                }
+              />{" "}
+              <Route
+                path="/about"
+                element={
+                  <PublicRoute>
+                    <AboutPage />
+                  </PublicRoute>
+                }
+              />{" "}
+            </Routes>{" "}
+            <Footer />
+          </Box>
         </BrowserRouter>
       </SnackbarProvider>
     </ThemeProvider>

@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  IconButton,
   Tab,
   Tabs,
   TextField,
@@ -28,15 +29,33 @@ import { enqueueSnackbar } from "notistack";
 import { updateProfile } from "../../store/userSlice";
 import { getSavedPostsApi } from "../../services/postService";
 import type { TPost } from "../../types/TPost";
+import { useRef } from "react";
+import EditIcon from "@mui/icons-material/Edit";
 
 const ProfilePage = () => {
   const user = useSelector((state: RootState) => state.user.user);
   const posts = useSelector((state: RootState) => state.posts.posts);
   const dispatch = useDispatch<AppDispatch>();
   const [editOpen, setEditOpen] = useState(false);
-  const [firstName, setFirstName] = useState(user?.name.first ?? "");
-  const [lastName, setLastName] = useState(user?.name.last ?? "");
-  const [email, setEmail] = useState(user?.email ?? "");
+
+  const [profileForm, setProfileForm] = useState({
+    firstName: user?.name.first ?? "",
+    lastName: user?.name.last ?? "",
+    email: user?.email ?? "",
+    phone: user?.phone ?? "",
+    birthDate: user?.birthDate
+      ? new Date(user.birthDate).toISOString().slice(0, 10)
+      : "",
+    country: user?.address?.country ?? "",
+    city: user?.address?.city ?? "",
+    street: user?.address?.street ?? "",
+    houseNumber: user?.address?.houseNumber ?? "",
+  });
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
+    user?.avatar?.url
+  );
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [activeTab, setActiveTab] = useState<"my" | "saved">("my");
   const [savedFeed, setSavedFeed] = useState<TPost[]>([]);
@@ -46,9 +65,21 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (user) {
-      setFirstName(user.name.first ?? "");
-      setLastName(user.name.last ?? "");
-      setEmail(user.email ?? "");
+      setProfileForm({
+        firstName: user.name.first ?? "",
+        lastName: user.name.last ?? "",
+        email: user.email ?? "",
+        phone: user.phone ?? "",
+        birthDate: user.birthDate
+          ? new Date(user.birthDate).toISOString().slice(0, 10)
+          : "",
+        country: user?.address?.country ?? "",
+        city: user?.address?.city ?? "",
+        street: user?.address?.street ?? "",
+        houseNumber: user?.address?.houseNumber ?? "",
+      });
+      setAvatarPreview(user?.avatar?.url);
+      setAvatarFile(null);
     }
   }, [user]);
   if (!user) {
@@ -68,10 +99,30 @@ const ProfilePage = () => {
 
   const handleSave = async () => {
     try {
+      let avatarPayload = user?.avatar;
+      if (avatarFile && avatarPreview) {
+        avatarPayload = {
+          url: avatarPreview,
+          alt: avatarFile.name,
+        };
+      }
       await dispatch(
         updateProfile({
-          name: { first: firstName, last: lastName },
-          email,
+          name: {
+            first: profileForm.firstName,
+            last: profileForm.lastName,
+          },
+          email: profileForm.email,
+          phone: profileForm.phone,
+          address: {
+            country: profileForm.country,
+            city: profileForm.city,
+            street: profileForm.street,
+            houseNumber: profileForm.houseNumber
+              ? Number(profileForm.houseNumber)
+              : undefined,
+          },
+          avatar: avatarPayload,
         })
       ).unwrap();
       enqueueSnackbar("Profile updated", { variant: "success" });
@@ -84,6 +135,12 @@ const ProfilePage = () => {
       enqueueSnackbar(message, { variant: "error" });
     }
   };
+
+  const updateProfileField =
+    (field: keyof typeof profileForm) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setProfileForm((prev) => ({ ...prev, [field]: event.target.value }));
+    };
 
   const handleDeletePost = async (postId: string) => {
     try {
@@ -168,13 +225,28 @@ const ProfilePage = () => {
   return (
     <Container sx={{ mt: 12 }}>
       <Box display="flex" alignItems="center" gap={2}>
-        <Avatar
-          sx={{ width: 80, height: 80 }}
-          src={
-            user.avatar?.url ??
-            `https://i.pravatar.cc/150?u=${user._id ?? "profile"}`
-          }
-        />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Avatar
+            sx={{ width: 120, height: 120, borderRadius: 1 }}
+            src={avatarPreview}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            ref={fileInputRef}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = () => {
+                setAvatarFile(file);
+                setAvatarPreview(reader.result as string);
+              };
+              reader.readAsDataURL(file);
+            }}
+          />
+        </Box>
         <Tabs
           value={activeTab}
           onChange={(_, value) => setActiveTab(value)}
@@ -275,26 +347,112 @@ const ProfilePage = () => {
           <DialogContent
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
+            {" "}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {" "}
+              <Box sx={{ position: "relative", width: 100, height: 140 }}>
+                {" "}
+                <Avatar
+                  sx={{ width: 140, height: 140, border: "3px solid #1bbe3a" }}
+                  src={avatarPreview}
+                />{" "}
+                <IconButton
+                  onClick={() => fileInputRef.current?.click()}
+                  size="medium"
+                  sx={{
+                    position: "absolute",
+                    top: "70%",
+                    right: -40,
+                    bgcolor: "rgb(187, 180, 180)",
+                    color: "#000",
+                    "&:hover": { bgcolor: "rgb(180, 172, 172)" },
+                  }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>{" "}
+              </Box>
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                ref={fileInputRef}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    setAvatarFile(file);
+                    setAvatarPreview(reader.result as string);
+                  };
+                  reader.readAsDataURL(file);
+                }}
+              />
+            </Box>
             <TextField
               label="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              value={profileForm.firstName}
+              onChange={updateProfileField("firstName")}
             />
             <TextField
               label="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              value={profileForm.lastName}
+              onChange={updateProfileField("lastName")}
             />
             <TextField
               label="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={profileForm.email}
+              onChange={updateProfileField("email")}
+            />
+            <TextField
+              label="Phone"
+              value={profileForm.phone}
+              onChange={updateProfileField("phone")}
+            />
+            <TextField
+              label="Birth Date"
+              type="date"
+              value={profileForm.birthDate}
+              onChange={updateProfileField("birthDate")}
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              label="Country"
+              value={profileForm.country}
+              onChange={updateProfileField("country")}
+            />
+            <TextField
+              label="City"
+              value={profileForm.city}
+              onChange={updateProfileField("city")}
+            />
+            <TextField
+              label="Street"
+              value={profileForm.street}
+              onChange={updateProfileField("street")}
+            />
+            <TextField
+              label="House Number"
+              type="number"
+              value={profileForm.houseNumber}
+              onChange={updateProfileField("houseNumber")}
             />
           </DialogContent>
         </Box>
         <DialogActions>
-          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained">
+          <Button onClick={() => setEditOpen(false)} sx={{ color: "#1bbe3a" }}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            sx={{ bgcolor: "#1bbe3a" }}
+          >
             Save
           </Button>
         </DialogActions>

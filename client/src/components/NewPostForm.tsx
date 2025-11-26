@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { enqueueSnackbar } from "notistack";
+import type { TUser } from "../types/TUser";
 
 interface NewPostFormProps {
   onAddPost: (content: string, image?: string) => void;
@@ -15,7 +16,7 @@ interface NewPostFormProps {
 const NewPostForm = ({ onAddPost, onClose }: NewPostFormProps) => {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<string | null>(null);
-  const user = useSelector((state: RootState) => state.user.user);
+  const user = useSelector((state: RootState) => state.user.user) as TUser;
 
   const MAX_SIZE_MB = 5;
 
